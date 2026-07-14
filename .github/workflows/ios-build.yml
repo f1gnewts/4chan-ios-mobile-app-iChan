@@ -1,0 +1,38 @@
+name: Build iChan IPA
+
+on:
+  workflow_dispatch: # This adds the "Run workflow" dropdown menu you need
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: |
+          cd iChan
+          flutter pub get
+
+      - name: Build iOS App (Unsigned)
+        run: |
+          cd iChan
+          flutter build ios --release --no-codesign
+
+      - name: Package into IPA
+        run: |
+          mkdir -p Payload
+          cp -r iChan/build/ios/iphoneos/Runner.app Payload/
+          zip -r iChan.ipa Payload
+          
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iChan-IPA
+          path: iChan.ipa
