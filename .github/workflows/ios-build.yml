@@ -1,7 +1,7 @@
 name: Build iChan IPA
 
 on:
-  workflow_dispatch: # This adds the "Run workflow" dropdown menu you need
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,18 +17,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd iChan
           flutter pub get
 
       - name: Build iOS App (Unsigned)
         run: |
-          cd iChan
           flutter build ios --release --no-codesign
 
       - name: Package into IPA
         run: |
           mkdir -p Payload
-          cp -r iChan/build/ios/iphoneos/Runner.app Payload/
+          cp -r build/ios/iphoneos/Runner.app Payload/
           zip -r iChan.ipa Payload
           
       - name: Upload IPA Artifact
